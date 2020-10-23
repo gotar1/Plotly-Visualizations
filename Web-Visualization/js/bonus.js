@@ -2,7 +2,7 @@
 
 function createPlots(id) {
 
-    d3.json("data/samples.json").then((data) =>{
+    d3.json("../data/samples.json").then((data) =>{
         let dataCopy = data;
         let dataSample = dataCopy.samples;
         console.log(dataSample);
@@ -42,37 +42,89 @@ function createPlots(id) {
                 b: 100
             }
         };
+
+        Plotly.newPlot('bar', dataTrace, layout); 
+
+
+        let traceGauge = {
+
+            type: 'pie',
+            showlegend: false,
+            hole: 0.4,
+            rotation: 90,
+            values: sampleValues,
+            text: ['0-1','1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9'],
+            direction: 'clockwise',
+            textinfo: 'text',
+            textposition: 'inside',
+            marker: {
+                colors: ['','','','','','','','','green'],
+                labels: otuLabels,
+                hoverinfo: 'label'  
+                
+            }   
+        };
+        // ['0-1','1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9']
+        // [ 81/9, 81/9, 81/9, 81/9, 81/9, 81/9, 81/9, 81/9, 81/9, 81]
+        // needle
+        let degrees = 50, radius = .9;
+        let radians = degrees * Math.PI / 180;
+        let x = -1 * radius * Math.cos(radians);
+        let y = radius * Math.sin(radians);
     
-       Plotly.newPlot('bar', dataTrace, layout); 
+        let gaugeLayout = {
+          shapes: [{
+            type: 'line',
+            x0: 0.5,
+            y0: 0.5,
+            x1: 0.6,
+            y1: 0.6,
+            line: {
+              color: 'red',
+              width: 3
+            }
+          }],
 
-       let bubbleTrace = {
-           x: otuIds,
-           y: sampleValues,
-           mode: "markers",
-           marker: {
-               size: sampleValues,
-               color: otuIds
-           },
-           text: otuLabels
-       };
+          title: 'Bully Button Washing Frequency',
+          subtitle:'Scrubs per Week',
+        //   xaxis: {visible: false, range: [-1, 1]},
+        //   yaxis: {visible: false, range: [-1, 1]}
+        };
+    
+        let dataGauge = [traceGauge];
+    
+        Plotly.plot('gauge', dataGauge, gaugeLayout);
 
-       let bubbleData = [bubbleTrace];
 
-       let bubbleLayout = {
-           xaxis: {title: "OTU ID"},
-           height: 500,
-           width: 900,
-           title: "Bacteria Concentration"
-
-       };
-
-       Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+        let bubbleTrace = {
+            x: otuIds,
+            y: sampleValues,
+            mode: "markers",
+            marker: {
+                size: sampleValues,
+                color: otuIds
+            },
+            text: otuLabels
+        };
+ 
+        let bubbleData = [bubbleTrace];
+ 
+        let bubbleLayout = {
+            xaxis: {title: "OTU ID"},
+            height: 500,
+            width: 900,
+            title: "Bacteria Concentration"
+ 
+        };
+ 
+        Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+        
     });
 };
 
 
 function createDemographic(id) {
-    d3.json("data/samples.json").then(data => {
+    d3.json("../data/samples.json").then(data => {
         let dataCopy1 = data;
         let metaData = dataCopy1.metadata;
         console.log(metaData);
@@ -103,11 +155,10 @@ function optionChanged(id) {
 function init() {
     let testIdButton = d3.select("#selDataset");
     console.log(testIdButton)
-    d3.json("data/samples.json").then(function(data) {
+    d3.json("../data/samples.json").then(function(data) {
         let dataCopy2 = data;
         console.log(dataCopy2.names);
-        // let dataCopy2 = JSON.parse(dataCopy1);
-        // data = JSON.parse(data)
+        
         dataCopy2.names.forEach(name => {
             testIdButton.append("option")         
                 .text(name)        

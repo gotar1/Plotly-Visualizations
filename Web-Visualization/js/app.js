@@ -2,7 +2,7 @@
 
 function createPlots(id) {
 
-    d3.json("data/samples.json").then((data) =>{
+    d3.json("../data/samples.json").then((data) =>{
         let dataCopy = data;
         let dataSample = dataCopy.samples;
         console.log(dataSample);
@@ -34,7 +34,7 @@ function createPlots(id) {
         let dataTrace = [trace1];
     
         let layout = {
-            title: "bully button mess",
+            title: "Bacteria Concentration Bar Chart",
             margin: {
                 l: 100,
                 r: 100,
@@ -60,9 +60,10 @@ function createPlots(id) {
 
        let bubbleLayout = {
            xaxis: {title: "OTU ID"},
+           yaxis: {title: "Sample Values"},
            height: 500,
            width: 900,
-           title: "Bacteria Concentration"
+           title: "Bacteria Concentration Bubble Chart"
 
        };
 
@@ -72,7 +73,7 @@ function createPlots(id) {
 
 
 function createDemographic(id) {
-    d3.json("data/samples.json").then(data => {
+    d3.json("../data/samples.json").then(data => {
         let dataCopy1 = data;
         let metaData = dataCopy1.metadata;
         console.log(metaData);
@@ -103,7 +104,7 @@ function optionChanged(id) {
 function init() {
     let testIdButton = d3.select("#selDataset");
     console.log(testIdButton)
-    d3.json("data/samples.json").then(function(data) {
+    d3.json("../data/samples.json").then(function(data) {
         let dataCopy2 = data;
         console.log(dataCopy2.names);
         // let dataCopy2 = JSON.parse(dataCopy1);
