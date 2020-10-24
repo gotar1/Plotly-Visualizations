@@ -24,15 +24,15 @@ function createPlots(id) {
 
         // build pie chart
         let pieData = [{
-            values: sampleValues.splice(0,10),
+            values: sampleValues.slice(0,10),
             labels: otuIdNamed,
-            text: sampleValues.splice(0,10),
+            text: sampleValues.slice(0,10),
             type: 'pie'
         }];
         
         Plotly.newPlot('bar', pieData);
         
-        // biuld bubble chart..
+        // build bubble chart..
         let bubbleTrace = {
             x: otuIds,
             y: sampleValues,
@@ -41,7 +41,7 @@ function createPlots(id) {
                 size: sampleValues,
                 color: otuIds
             },
-            text: otuLabels
+            text: otuLabels       
         };
 
         let bubbleData = [bubbleTrace];
