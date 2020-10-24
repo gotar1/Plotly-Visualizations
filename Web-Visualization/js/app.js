@@ -1,5 +1,4 @@
-// working in this homework was a pain in...
-
+//create function to biuld charts and then update them based on changed ID...
 function createPlots(id) {
 
     d3.json("../data/samples.json").then((data) =>{
@@ -22,7 +21,8 @@ function createPlots(id) {
 
         let sampleValues = filteredData.sample_values;
         console.log(sampleValues);
-     
+        
+        // build bar chart..
         let trace1 = {
             x: sampleValues.slice(0, 10).reverse(),
             y: otuIdNamed.reverse(),
@@ -45,6 +45,7 @@ function createPlots(id) {
     
        Plotly.newPlot('bar', dataTrace, layout); 
 
+    // build bubble chart
        let bubbleTrace = {
            x: otuIds,
            y: sampleValues,
@@ -64,14 +65,13 @@ function createPlots(id) {
            height: 500,
            width: 900,
            title: "Bacteria Concentration Bubble Chart"
-
-       };
+        };
 
        Plotly.newPlot('bubble', bubbleData, bubbleLayout);
     });
 };
 
-
+// function to display demographic information for selected ID..
 function createDemographic(id) {
     d3.json("../data/samples.json").then(data => {
         let dataCopy1 = data;
@@ -87,44 +87,36 @@ function createDemographic(id) {
         Object.entries(filteredMetaData).forEach(key => {
             demographicInfo
                 .append("h5")
-                .text(key[0] + ": " + key[1])
-            
+                .text(key[0] + ": " + key[1])         
         });
-
     });
-
-
 };
 
+// update function ID selection button..
 function optionChanged(id) {
     createPlots(id);
     createDemographic(id);
 }
 
+// intial function for updating charts based on ID selected..
 function init() {
     let testIdButton = d3.select("#selDataset");
     console.log(testIdButton)
     d3.json("../data/samples.json").then(function(data) {
         let dataCopy2 = data;
         console.log(dataCopy2.names);
-        // let dataCopy2 = JSON.parse(dataCopy1);
-        // data = JSON.parse(data)
         dataCopy2.names.forEach(name => {
             testIdButton.append("option")         
                 .text(name)        
                 .property("value")
        
             });
-
-        
+       
         createPlots(dataCopy2.names[0]);
-        createDemographic(dataCopy2.names[0])
+        createDemographic(dataCopy2.names[0]);
     });
-
 };
 
 init();
 
-// let x = d3.json()
-// console.log(x)
 
