@@ -1,187 +1,207 @@
 //create function to biuld charts and then update them based on changed ID...
 function createPlots(id) {
 
-    d3.json("../data/samples.json").then((data) =>{
-        let dataCopy = data;
-        let dataSample = dataCopy.samples;
-        console.log(dataSample);
+  d3.json("../data/samples.json").then((data) =>{
 
-        let filteredData = dataSample.filter(item => item.id.toString() === id)[0];
-        console.log(filteredData);
-   
-        let otuIds = filteredData.otu_ids;
-        console.log(otuIds);
-        let otuSliced =  otuIds.slice(0, 10);
-        console.log(otuSliced);
-        let otuIdNamed = otuSliced.map(id => "OTU " + id);
-        console.log(otuIdNamed);
+    let dataCopy = data;
+    let dataSample = dataCopy.samples;
+    console.log(dataSample);
 
-        let otuLabels = filteredData.otu_labels;
-        console.log(otuLabels);
+    let filteredData = dataSample.filter(item => item.id.toString() === id)[0];
+    console.log(filteredData);
 
-        let sampleValues = filteredData.sample_values;
-        console.log(sampleValues);
+    let otuIds = filteredData.otu_ids;
+    console.log(otuIds);
+    let otuSliced =  otuIds.slice(0, 10);
+    console.log(otuSliced);
+    let otuIdNamed = otuSliced.map(id => "OTU " + id);
+    console.log(otuIdNamed);
 
-        // build pie chart
-        let pieData = [{
-            values: sampleValues.slice(0,10),
-            labels: otuIdNamed,
-            text: sampleValues.slice(0,10),
-            type: 'pie'
-        }];
-        
-        Plotly.newPlot('bar', pieData);
-        
-        // build bubble chart..
-        let bubbleTrace = {
-            x: otuIds,
-            y: sampleValues,
-            mode: "markers",
-            marker: {
-                size: sampleValues,
-                color: otuIds
-            },
-            text: otuLabels       
-        };
+    let otuLabels = filteredData.otu_labels;
+    console.log(otuLabels);
 
-        let bubbleData = [bubbleTrace];
+    let sampleValues = filteredData.sample_values;
+    console.log(sampleValues);
 
-        let bubbleLayout = {
-            xaxis: {title: "OTU ID"},
-            yaxis: {title: "Sample Values"},
-            height: 500,
-            width: 900,
-            title: "Bacteria Concentration"
-        };
-
-        Plotly.newPlot('bubble', bubbleData, bubbleLayout); 
-
-        // build gauge chart..
-        let dataMeta = dataCopy.metadata;
-        console.log(dataMeta);
-
-        let filteredMeta = dataMeta.filter(item => item.id.toString() === id)[0];
-        console.log(filteredMeta);
-
-        let washingFreq = filteredMeta.wfreq;
-        console.log(washingFreq);
-
-        let traceGauge = {
-            domain: { 
-                x: [0, 1],
-                y: [0, 1] 
-                },
-            type: 'indicator',
-            mode: "gauge+number",
-            showlegend: false,
-            hole: 0.4,
-            rotation: 90,
-            axis: { axis: { range: [null, 9]}},
-            value: washingFreq,
-            text: ['0-1','1-2','2-3','3-4','4-5','5-6','6-7','7-8','8-9'],
-            direction: 'clockwise',
-            textinfo: 'text',
-            textposition: 'inside',
-            
-            gauge: {
-                
-                title: {text: "Scrub per Week"},
-                
-                steps: [
-                  { range: [0, 1], color: "#E0FFFF" },
-                  { range: [1, 2], color: "#B0E0E6" },
-                  { range: [2, 3], color: "#90EE90" },
-                  { range: [3, 4], color: "#98FB98" },
-                  { range: [4, 5], color: "#00FA9A" },
-                  { range: [5, 6], color: "#00FF7F" },
-                  { range: [6, 7], color: "#3CB371" },
-                  { range: [7, 8], color: "#2E8B57" },
-                  { range: [8, 9], color: "#006400" },
-                ],
-            } 
-        };
-
-        // needle
-        let degrees = 137, radius = 0.5;
-        let radians = degrees * Math.PI / 180;
-        let x = -1 * radius * Math.cos(radians)*washingFreq;
-        let y = radius * Math.sin(radians)*washingFreq;
-        console.log(x, y)
+    // build pie chart
+    let pieData = [{
+      values: sampleValues.slice(0,10),
+      labels: otuIdNamed,
+      text: sampleValues.slice(0,10),
+      type: 'pie'
+    }];
     
-        let gaugeLayout = {
-          shapes: [{
-            type: 'line',
-            x0: 0.5,
-            y0: 0.5,
-            x1: x,
-            y1: y,
-            line: {
-              color: 'red',
-              width: 5
-            }
-        }],
+    Plotly.newPlot('bar', pieData);
+    
+    // build gauge chart..
+    let dataMeta = dataCopy.metadata;
+    console.log(dataMeta);
+    
+    let filteredMeta = dataMeta.filter(item => item.id.toString() === id)[0];
+    console.log(filteredMeta);
+    
+    let wfreq = filteredMeta.wfreq;
+    console.log(wfreq);
 
-        width: 600, 
-        height: 500, 
-        margin: {
-            t: 0, 
-            b: 0 
+    // Enter the washing frequency between 0 and 180
+    let level = parseFloat(wfreq) * 20;
+    // Trig to calc meter point
+    let degrees = 180 - level;
+    let radius = 0.5;
+    let radians = (degrees * Math.PI) / 180;
+    let x = radius * Math.cos(radians);
+    let y = radius * Math.sin(radians);
+
+    // Path: may have to change to create a better triangle
+    let mainPath = "M -.0 -0.05 L .0 0.05 L ";
+    let pathX = String(x);
+    let space = " ";
+    let pathY = String(y);
+    let pathEnd = " Z";
+    let path = mainPath.concat(pathX, space, pathY, pathEnd);
+    let gaugeData = [
+      {
+        type: "scatter",
+        x: [0],
+        y: [0],
+        marker: { size: 12, color: "850000" },
+        showlegend: false,
+        name: "Freq",
+        text: level,
+        hoverinfo: "text+name"
+      },
+      {
+        values: [50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50 / 9, 50],
+        rotation: 90,
+        text: ["8-9", "7-8", "6-7", "5-6", "4-5", "3-4", "2-3", "1-2", "0-1", ""],
+        textinfo: "text",
+        textposition: "inside",
+        marker: {
+          colors: [
+            "rgba(0, 105, 11, .5)",
+            "rgba(10, 120, 22, .5)",
+            "rgba(14, 127, 0, .5)",
+            "rgba(110, 154, 22, .5)",
+            "rgba(170, 202, 42, .5)",
+            "rgba(202, 209, 95, .5)",
+            "rgba(210, 206, 145, .5)",
+            "rgba(232, 226, 202, .5)",
+            "rgba(240, 230, 215, .5)",
+            "rgba(255, 255, 255, 0)"
+          ]
         },
-        
-        title: 'Bully Button Washing Frequency'
-        };
+        labels: ["8-9", "7-8", "6-7", "5-6", "4-5", "3-4", "2-3", "1-2", "0-1", ""],
+        hoverinfo: "label",
+        hole: 0.5,
+        type: "pie",
+        showlegend: false
+      }
+    ];
+
+    let layout = {
+      shapes: [
+        {
+          type: "path",
+          path: path,
+          fillcolor: "850000",
+          line: {
+            color: "850000"
+          }
+        }
+      ],
+
+      title: "<b>Belly Button Washing Frequency</b> <br> Scrubs per Week",
+      height: 500,
+      width: 500,
+      xaxis: {
+        zeroline: false,
+        showticklabels: false,
+        showgrid: false,
+        range: [-1, 1]
+      },
+      yaxis: {
+        zeroline: false,
+        showticklabels: false,
+        showgrid: false,
+        range: [-1, 1]
+      }
+    };
+
+    // let GAUGE = document.getElementById("gauge");
+    Plotly.newPlot("gauge", gaugeData, layout);
+    console.log(gaugeData) 
     
-        let dataGauge = [traceGauge];
-    
-        Plotly.newPlot('gauge', dataGauge, gaugeLayout);          
-    });
+    // build bubble chart
+    let bubbleTrace = {
+      x: otuIds,
+      y: sampleValues,
+      mode: "markers",
+      marker: {
+          size: sampleValues,
+          color: otuIds
+      },
+      text: otuLabels
+    };
+
+    let bubbleData = [bubbleTrace];
+
+    let bubbleLayout = {
+      xaxis: {title: "OTU ID"},
+      yaxis: {title: "Sample Values"},
+      height: 500,
+      width: 900,
+      title: "Bacteria Concentration Bubble Chart"
+    };
+
+    Plotly.newPlot('bubble', bubbleData, bubbleLayout);
+  });
 };
 
 // function to display demographic information for selected ID..
 function createDemographic(id) {
-    d3.json("../data/samples.json").then(data => {
-        let dataCopy1 = data;
-        let metaData = dataCopy1.metadata;
-        console.log(metaData);
+  d3.json("../data/samples.json").then(data => {
+    let dataCopy1 = data;
+    let metaData = dataCopy1.metadata;
+    console.log(metaData);
 
-        let filteredMetaData = metaData.filter(item => item.id.toString() === id)[0]
-        console.log(filteredMetaData);
-        
-        let demographicInfo = d3.select("#sample-metadata");
-        console.log(demographicInfo);
-        demographicInfo.html("");
-        Object.entries(filteredMetaData).forEach(key => {
-            demographicInfo
-                .append("h5")
-                .text(key[0] + ": " + key[1])         
-        });
+    let filteredMetaData = metaData.filter(item => item.id.toString() === id)[0]
+    console.log(filteredMetaData);
+    
+    let demographicInfo = d3.select("#sample-metadata");
+    console.log(demographicInfo);
+    demographicInfo.html("");
+    Object.entries(filteredMetaData).forEach(key => {
+      demographicInfo
+        .append("h5")
+        .text(key[0] + ": " + key[1])         
     });
+  });
 };
 
 // update function ID selection button..
 function optionChanged(id) {
-    createPlots(id);
-    createDemographic(id);
+  createPlots(id);
+  createDemographic(id);
 }
 
 // intial function for updating charts based on ID selected..
 function init() {
-    let testIdButton = d3.select("#selDataset");
-    console.log(testIdButton)
-    d3.json("../data/samples.json").then(function(data) {
-        let dataCopy2 = data;
-        console.log(dataCopy2.names);
+  let testIdButton = d3.select("#selDataset");
+  console.log(testIdButton)
+  d3.json("../data/samples.json").then(function(data) {
+    let dataCopy2 = data;
+    console.log(dataCopy2.names);
 
-        dataCopy2.names.forEach(name => {
-            testIdButton.append("option")         
-                .text(name)        
-                .property("value")
-       
-            });
-       
-        createPlots(dataCopy2.names[0]);
-        createDemographic(dataCopy2.names[0]);
+    dataCopy2.names.forEach(name => {
+      testIdButton.append("option")         
+        .text(name)        
+        .property("value")
+
     });
+    
+    createPlots(dataCopy2.names[0]);
+    createDemographic(dataCopy2.names[0]);
+  });
 };
 
 init();
