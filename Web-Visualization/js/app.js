@@ -182,6 +182,7 @@ function createDemographic(id) {
         console.log(demographicInfo);
         demographicInfo.html("");
         Object.entries(filteredMetaData).forEach(key => {
+            console.log(key)
             demographicInfo
                 .append("h5")
                 .text(key[0] + ": " + key[1])         
