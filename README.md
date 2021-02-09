@@ -53,7 +53,7 @@
 
 ### Step 4: Gauge Chart.
 
-* Built a Gauge Chart from <https://plot.ly/javascript/gauge-charts/> to plot the weekly washing frequency of the individual.
+* Built a Gauge Chart [Learn More](https://plot.ly/javascript/gauge-charts/) to plot the weekly washing frequency of the individual.
 
 * Gauge account for values ranging from 0 through 9.
 
